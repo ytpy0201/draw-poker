@@ -1,0 +1,3 @@
+test = "これはテストです"
+
+print(test)
