@@ -1,3 +1,0 @@
-test = "これはテストです"
-
-print(test)
