@@ -27,9 +27,9 @@ class Deck:
         self.cards = [Card(suit, rank) for suit in suits for rank in ranks]
         self.shuffle()
     def shuffle(self):
-        random.shuffle(self.cards)
+        random.shuffle(self.cards)#in-place
     def draw(self):
-        if not self.cards:
+        if not self.cards:#山札が空なら
             self.__init__()
         return self.cards.pop()
 
@@ -54,21 +54,24 @@ class Player:
     def judge_hand(self):
         numbers = sorted([card.value for card in self.hand], reverse=True)
         counts = Counter(numbers)
-        sorted_counts = sorted(counts.items(), key=lambda x: (x[1], x[0]), reverse=True)
+        sorted_counts = sorted(counts.items(), key=lambda x: (x[1], x[0]), reverse=True)#ラムダ式を使った２段階ルール
         compare_list = []
         for num, count in sorted_counts:
-            compare_list.extend([num] * count)
+            compare_list.extend([num] * count)#リストに別のリストをバラして追加
         count_pattern = sorted(counts.values())
+
         is_flush = len(set(card.suit for card in self.hand)) == 1
         sorted_nums = sorted(numbers)
+
         is_straight = (sorted_nums == [2, 3, 4, 5, 14]) or (
-            all(sorted_nums[i + 1] - sorted_nums[i] == 1 for i in range(4))
+            all(sorted_nums[i + 1] - sorted_nums[i] == 1 for i in range(4))#中の条件がすべてTrueのときにTrueを返す
         )
         if is_straight:
             if sorted_nums == [2, 3, 4, 5, 14]: compare_list = [5]
             else: compare_list = [max(numbers)]
         elif is_flush or count_pattern == [1, 1, 1, 1, 1]:
             compare_list = numbers
+
         is_royal = is_flush and (sorted_nums == [10, 11, 12, 13, 14])
 
         if is_royal: role = "ロイヤルストレートフラッシュ"
@@ -96,7 +99,7 @@ class PokerApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Python Desktop Poker (CustomTkinter)")
+        self.title("Python Desktop Poker")
         self.geometry("700x650")
         self.resizable(False, False)
 
@@ -356,7 +359,7 @@ class PokerApp(ctk.CTk):
         lbl_title = ctk.CTkLabel(self.du_win, text="🎰 ダブルアップチャンス 🎰", font=ctk.CTkFont(size=20, weight="bold"))
         lbl_title.pack(pady=15)
 
-        self.lbl_pool = ctk.CTkLabel(self.du_win, text=f"現在の権利: {self.current_winnings} 枚", font=ctk.CTkFont(size=16, color="yellow"))
+        self.lbl_pool = ctk.CTkLabel(self.du_win, text=f"現在の権利: {self.current_winnings} 枚", font=ctk.CTkFont(size=16), text_color="yellow")
         self.lbl_pool.pack(pady=5)
 
         lbl_guide = ctk.CTkLabel(self.du_win, text="次のカードは基準より「大きい」か「小さい」か？", font=ctk.CTkFont(size=13))
